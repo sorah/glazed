@@ -1,0 +1,160 @@
+# Version:      v2.0.9
+# Build ID:     5402463
+# Build on:     01/08/21 12:48
+# Copyright:    2012-2021 Ubiquiti Networks, Inc.
+# HW model:     EdgeRouter X 5-Port
+# HW S/N:       FAKE00000001
+firewall {
+    name WAN_IN {
+        default-action drop
+    }
+}
+interfaces {
+    ethernet eth0 {
+        address 192.0.2.2/24
+        pppoe 0 {
+            password [~REDACTED~]
+        }
+    }
+    ethernet eth1 {
+        vrrp {
+            vrrp-group 10 {
+                authentication {
+                    password [~REDACTED~]
+                }
+            }
+        }
+    }
+    wireguard wg0 {
+        private-key [~REDACTED~]
+    }
+}
+policy {
+    community-list 100 {
+        rule 10 {
+            regex _65535:0_
+        }
+    }
+    route-map IN {
+        rule 10 {
+            match {
+                community {
+                    community-list 100
+                }
+            }
+        }
+    }
+}
+protocols {
+    bgp 64512 {
+        neighbor 198.51.100.1 {
+            password [~REDACTED~]
+            remote-as 64496
+        }
+    }
+    ospf {
+        area 0 {
+            authentication {
+                md5 {
+                    key-id 1 {
+                        md5-key [~REDACTED~]
+                    }
+                }
+            }
+        }
+        interface eth1 {
+            authentication {
+                plaintext-password [~REDACTED~]
+            }
+        }
+    }
+    static {
+        route 0.0.0.0/0 {
+            next-hop 192.0.2.1
+        }
+    }
+}
+service {
+    dns {
+        dynamic {
+            interface eth0 {
+                service dyndns {
+                    login ddnsuser
+                    password [~REDACTED~]
+                }
+            }
+        }
+    }
+    snmp {
+        community [~REDACTED~] {
+            authorization ro
+        }
+        trap-target 192.0.2.50 {
+            community [~REDACTED~]
+        }
+        v3 {
+            user monitor {
+                auth {
+                    plaintext-key [~REDACTED~]
+                }
+                privacy {
+                    encrypted-key [~REDACTED~]
+                }
+            }
+        }
+    }
+    ssh {
+        disable-password-authentication
+        listen-address 192.0.2.2
+    }
+    unms {
+        connection [~REDACTED~]
+    }
+}
+system {
+    config-management {
+        commit-archive {
+            location [~REDACTED~]
+        }
+    }
+    login {
+        radius-server 192.0.2.70 {
+            secret [~REDACTED~]
+        }
+        user admin {
+            authentication {
+                encrypted-password [~REDACTED~]
+                plaintext-password [~REDACTED~]
+                public-keys k1 {
+                    key AAAAC3NzaC1lZDI1NTE5AAAAIFAKEPUBLICKEYnotasecret
+                    type ssh-ed25519
+                }
+            }
+        }
+    }
+}
+vpn {
+    ipsec {
+        site-to-site {
+            peer 203.0.113.9 {
+                authentication {
+                    pre-shared-secret [~REDACTED~]
+                }
+            }
+        }
+    }
+    pptp {
+        remote-access {
+            authentication {
+                local-users {
+                    username u1 {
+                        password [~REDACTED~]
+                    }
+                }
+            }
+        }
+    }
+}
+/* Warning: Do not remove the following line. */
+/* === vyatta-config-version: "config-management@1:conntrack@1:firewall@5:ipsec@5:system@5" === */
+/* Release version: v2.0.9.5402463.210108.1248 */
