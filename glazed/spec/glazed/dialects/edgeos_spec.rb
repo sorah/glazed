@@ -8,6 +8,18 @@ require 'glazed/redactor'
 RSpec.describe Glazed::Dialects::Edgeos do
   it_behaves_like 'a dialect simulation', 'edgeos/er', transport: 'ssh'
 
+  describe 'prompt' do
+    it 'matches the operational and configure mode prompts' do
+      ["admin@er:~$ ", "admin@er:/config$", "admin@er# ", "admin@er#"].each do |line|
+        expect(described_class.prompt_pattern).to match(line)
+      end
+    end
+
+    it 'does not match command output' do
+      expect(described_class.prompt_pattern).not_to match("    password abc#")
+    end
+  end
+
   describe 'lines that are not secrets' do
     let(:redactor) { Glazed::Redactor.new(patterns: described_class.sensitive_patterns, mode: :remove) }
 
