@@ -14,9 +14,9 @@ module Glazed
     # Ubiquiti EdgeOS (EdgeRouter, Vyatta based).
     #
     # Collects `show configuration`, the hierarchical form, as the other dialects do with their native configuration.
-    # The login shell is vbash, whose prompt is `user@host:~$`.
+    # The login shell is vbash, whose prompt is `user@host:~$`, and `user@host#` in configure mode.
     class Edgeos < Base
-      prompt(/^([\w.-]+@[\w.-]+:[~\w\/.-]*\$\s?)$/)
+      prompt(/^([\w.-]+@[\w.-]+(?::[~\w\/.-]*\$|#)\s?)$/)
       comment_prefix '# '
 
       filter_output { |output| output.gsub(/[ \t\r]+$/, '') }
