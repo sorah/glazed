@@ -12,8 +12,10 @@ require 'glazed/dialects/base'
 module Glazed
   module Dialects
     # Allied Telesis AlliedWare Plus.
+    #
+    # The prompt is `host>` or `host#`, and `host(config)#` or `host(config-if)#` in configure mode.
     class Awplus < Base
-      prompt(/^(\r?[\w.@:\/-]+[#>]\s?)$/)
+      prompt(/^(\r?[\w.@:\/()-]+[#>]\s?)$/)
       comment_prefix '! '
 
       interact(/--More--/) do |cli, _buffer, match|
